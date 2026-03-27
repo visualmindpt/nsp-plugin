@@ -1,0 +1,73 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Data (exceto modelos necessários)
+data/images/
+data/*.db
+data/*.db-journal
+data/feedback_export/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Documentation
+*.md
+docs/
+README.md
+
+# Tests
+tests/
+*_test.py
+test_*.py
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Monitoring (não necessário no build)
+monitoring/
+
+# NSP Plugin Lightroom (não necessário no servidor)
+NSP-Plugin.lrplugin/

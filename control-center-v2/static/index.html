@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSP Control Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent-blue: #007AFF;
+            --accent-green: #34C759;
+            --accent-red: #FF3B30;
+            --accent-orange: #FF9500;
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.2) 0%, transparent 50%);
+            animation: pulse 15s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Liquid Glass Effect */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .version {
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* Server Controls */
+        .server-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge.online {
+            background: rgba(52, 199, 89, 0.2);
+            border: 1px solid rgba(52, 199, 89, 0.5);
+        }
+
+        .status-badge.offline {
+            background: rgba(255, 59, 48, 0.2);
+            border: 1px solid rgba(255, 59, 48, 0.5);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        .status-dot.online { background: var(--accent-green); }
+        .status-dot.offline { background: var(--accent-red); }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Buttons */
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-panic {
+            background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%);
+            color: white;
+            font-weight: 700;
+            animation: glow-danger 2s ease-in-out infinite;
+        }
+
+        @keyframes glow-danger {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 59, 48, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 59, 48, 0.8); }
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            padding: 1.5rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .metric-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .metric-content h3 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .metric-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Control Panel */
+        .control-panel {
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .control-section {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+
+        .control-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* Logs Section */
+        .logs-section {
+            padding: 2rem;
+            border-radius: 20px;
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .logs-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+
+        .log-entry {
+            padding: 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .log-time {
+            color: var(--text-secondary);
+            margin-right: 0.5rem;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { background: rgba(52, 199, 89, 0.9); }
+        .toast.error { background: rgba(255, 59, 48, 0.9); }
+        .toast.warning { background: rgba(255, 149, 0, 0.9); }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="glass">
+            <div class="logo">
+                <h1>🎨 NSP Control Center</h1>
+                <span class="version">v2.0</span>
+            </div>
+            <div class="server-controls">
+                <div class="status-badge offline" id="serverStatus">
+                    <span class="status-dot offline"></span>
+                    <span>Servidor Offline</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card glass">
+                <div class="metric-icon">🖥️</div>
+                <div class="metric-content">
+                    <h3>CPU Usage</h3>
+                    <p class="metric-value" id="cpuUsage">--%</p>
+                    <span class="metric-sub">System load</span>
+                </div>
+            </div>
+
+            <div class="metric-card glass">
+                <div class="metric-icon">💾</div>
+                <div class="metric-content">
+                    <h3>Memory</h3>
+                    <p class="metric-value" id="memoryUsage">-- MB</p>
+                    <span class="metric-sub" id="memoryPercent">--% used</span>
+                </div>
+            </div>
+
+            <div class="metric-card glass">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-content">
+                    <h3>Server Uptime</h3>
+                    <p class="metric-value" id="uptime">--:--:--</p>
+                    <span class="metric-sub">HH:MM:SS</span>
+                </div>
+            </div>
+
+            <div class="metric-card glass">
+                <div class="metric-icon">📊</div>
+                <div class="metric-content">
+                    <h3>Predictions Today</h3>
+                    <p class="metric-value" id="predictionsCount">0</p>
+                    <span class="metric-sub">Total requests</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel glass">
+            <div class="control-grid">
+                <div class="control-section">
+                    <h3>⚙️ Server Control</h3>
+                    <div class="control-buttons">
+                        <button class="btn-success" id="btnStart" onclick="startServer()">
+                            ▶️ Start Inference Server
+                        </button>
+                        <button class="btn-danger" id="btnStop" onclick="stopServer()" disabled>
+                            ⏹️ Stop Server
+                        </button>
+                        <button class="btn-primary" onclick="checkStatus()">
+                            🔄 Check Status
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>🚨 Emergency Controls</h3>
+                    <div class="control-buttons">
+                        <button class="btn-panic" onclick="confirmPanic()">
+                            🚨 PANIC BUTTON
+                        </button>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                            ⚠️ Termina TODOS os processos Python em execução
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="logs-section glass">
+            <div class="logs-header">
+                <h3>📝 System Logs</h3>
+                <button class="btn-primary" onclick="clearLogs()">🗑️ Clear</button>
+            </div>
+            <div class="logs-container" id="logsContainer">
+                <div class="log-entry">
+                    <span class="log-time">[--:--:--]</span>
+                    <span>Control Center initialized</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const { invoke } = window.__TAURI__.core;
+
+        let updateInterval = null;
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Add log entry
+        function addLog(message, type = 'info') {
+            const logsContainer = document.getElementById('logsContainer');
+            const time = new Date().toLocaleTimeString('pt-PT');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<span class="log-time">[${time}]</span><span>${message}</span>`;
+            logsContainer.insertBefore(entry, logsContainer.firstChild);
+
+            // Limit logs to 100 entries
+            if (logsContainer.children.length > 100) {
+                logsContainer.removeChild(logsContainer.lastChild);
+            }
+        }
+
+        // Clear logs
+        function clearLogs() {
+            document.getElementById('logsContainer').innerHTML = '';
+            addLog('Logs cleared');
+        }
+
+        // Start server
+        async function startServer() {
+            const btn = document.getElementById('btnStart');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Starting...';
+
+            try {
+                const result = await invoke('start_inference_server');
+                addLog(`✅ ${result}`, 'success');
+                showToast('Servidor iniciado com sucesso!', 'success');
+                updateServerStatus();
+
+                // Start metrics update
+                if (!updateInterval) {
+                    updateInterval = setInterval(updateMetrics, 2000);
+                }
+            } catch (error) {
+                addLog(`❌ Erro: ${error}`, 'error');
+                showToast(`Erro ao iniciar: ${error}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '▶️ Start Inference Server';
+            }
+        }
+
+        // Stop server
+        async function stopServer() {
+            const btn = document.getElementById('btnStop');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Stopping...';
+
+            try {
+                const result = await invoke('stop_inference_server');
+                addLog(`🛑 ${result}`, 'success');
+                showToast('Servidor parado', 'success');
+                updateServerStatus();
+
+                // Stop metrics update
+                if (updateInterval) {
+                    clearInterval(updateInterval);
+                    updateInterval = null;
+                }
+            } catch (error) {
+                addLog(`❌ Erro: ${error}`, 'error');
+                showToast(`Erro ao parar: ${error}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '⏹️ Stop Server';
+            }
+        }
+
+        // Check status
+        async function checkStatus() {
+            updateServerStatus();
+            updateMetrics();
+        }
+
+        // Update server status
+        async function updateServerStatus() {
+            try {
+                const status = await invoke('server_status');
+                const badge = document.getElementById('serverStatus');
+                const btnStart = document.getElementById('btnStart');
+                const btnStop = document.getElementById('btnStop');
+
+                if (status.running) {
+                    badge.className = 'status-badge online';
+                    badge.innerHTML = `
+                        <span class="status-dot online"></span>
+                        <span>Online${status.pid ? ` (PID: ${status.pid})` : ''}</span>
+                    `;
+                    btnStart.disabled = true;
+                    btnStop.disabled = false;
+                } else {
+                    badge.className = 'status-badge offline';
+                    badge.innerHTML = `
+                        <span class="status-dot offline"></span>
+                        <span>Offline</span>
+                    `;
+                    btnStart.disabled = false;
+                    btnStop.disabled = true;
+                }
+            } catch (error) {
+                addLog(`❌ Erro ao verificar status: ${error}`, 'error');
+            }
+        }
+
+        // Update metrics
+        async function updateMetrics() {
+            try {
+                const metrics = await invoke('get_system_metrics');
+                document.getElementById('cpuUsage').textContent = `${metrics.cpu_percent.toFixed(1)}%`;
+                document.getElementById('memoryUsage').textContent = `${metrics.memory_used_mb.toFixed(0)} MB`;
+                document.getElementById('memoryPercent').textContent = `${metrics.memory_percent.toFixed(1)}% used`;
+            } catch (error) {
+                console.error('Failed to update metrics:', error);
+            }
+        }
+
+        // Panic button confirmation
+        function confirmPanic() {
+            if (confirm('⚠️ ATENÇÃO!\n\nIsto vai TERMINAR TODOS os processos Python no sistema.\nTens a certeza?')) {
+                executePanic();
+            }
+        }
+
+        // Execute panic button
+        async function executePanic() {
+            try {
+                const result = await invoke('panic_button');
+                addLog(result, 'warning');
+                showToast(result, 'warning');
+
+                // Update status after panic
+                setTimeout(updateServerStatus, 1000);
+
+                // Stop metrics update
+                if (updateInterval) {
+                    clearInterval(updateInterval);
+                    updateInterval = null;
+                }
+            } catch (error) {
+                addLog(`❌ Erro no panic button: ${error}`, 'error');
+                showToast(`Erro: ${error}`, 'error');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            addLog('🚀 NSP Control Center initialized');
+            updateServerStatus();
+            updateMetrics();
+
+            // Update status every 5 seconds
+            setInterval(updateServerStatus, 5000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+{
+  "timestamp": "2025-11-21T20:11:00.036530",
+  "total_tests": 54,
+  "passed": 51,
+  "failed": 3,
+  "warnings": 0,
+  "tests": [
+    {
+      "name": "File: services/dataset_quality_analyzer.py",
+      "status": "pass",
+      "message": "Found - Dataset Quality Analyzer",
+      "details": null
+    },
+    {
+      "name": "File: services/auto_hyperparameter_selector.py",
+      "status": "pass",
+      "message": "Found - Auto Hyperparameter Selector",
+      "details": null
+    },
+    {
+      "name": "File: services/learning_rate_finder.py",
+      "status": "pass",
+      "message": "Found - Learning Rate Finder",
+      "details": null
+    },
+    {
+      "name": "File: services/training_utils.py",
+      "status": "pass",
+      "message": "Found - Training Utils (Mixed Precision, etc)",
+      "details": null
+    },
+    {
+      "name": "File: services/scene_classifier.py",
+      "status": "pass",
+      "message": "Found - Scene Classifier",
+      "details": null
+    },
+    {
+      "name": "File: services/duplicate_detector.py",
+      "status": "pass",
+      "message": "Found - Duplicate Detector",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/feature_cache.py",
+      "status": "pass",
+      "message": "Found - Feature Cache",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/parallel_feature_extractor.py",
+      "status": "pass",
+      "message": "Found - Parallel Feature Extractor",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/progressive_trainer.py",
+      "status": "fail",
+      "message": "Missing - Progressive Trainer",
+      "details": null
+    },
+    {
+      "name": "File: services/alert_manager.py",
+      "status": "pass",
+      "message": "Found - Alert Manager",
+      "details": null
+    },
+    {
+      "name": "File: services/monitoring.py",
+      "status": "pass",
+      "message": "Found - Monitoring System",
+      "details": null
+    },
+    {
+      "name": "File: control-center-v2/static/js/websocket-client.js",
+      "status": "pass",
+      "message": "Found - WebSocket Client",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/feature_selector.py",
+      "status": "pass",
+      "message": "Found - Feature Selector",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/optuna_tuner.py",
+      "status": "pass",
+      "message": "Found - Optuna Tuner",
+      "details": null
+    },
+    {
+      "name": "File: scripts/auto_train.py",
+      "status": "pass",
+      "message": "Found - Auto Train Pipeline",
+      "details": null
+    },
+    {
+      "name": "File: services/scheduled_retrainer.py",
+      "status": "pass",
+      "message": "Found - Scheduled Retrainer",
+      "details": null
+    },
+    {
+      "name": "File: NSP-Plugin.lrplugin/PredictionCache.lua",
+      "status": "pass",
+      "message": "Found - Prediction Cache (Plugin)",
+      "details": null
+    },
+    {
+      "name": "File: NSP-Plugin.lrplugin/BatchProcessor.lua",
+      "status": "pass",
+      "message": "Found - Batch Processor (Plugin)",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/gradient_checkpointing.py",
+      "status": "pass",
+      "message": "Found - Gradient Checkpointing",
+      "details": null
+    },
+    {
+      "name": "File: train/train_models_v2.py",
+      "status": "pass",
+      "message": "Found - Main Training Script",
+      "details": null
+    },
+    {
+      "name": "File: services/server.py",
+      "status": "pass",
+      "message": "Found - API Server",
+      "details": null
+    },
+    {
+      "name": "Import: services.dataset_quality_analyzer.DatasetQualityAnalyzer",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.auto_hyperparameter_selector.AutoHyperparameterSelector",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.learning_rate_finder.find_optimal_lr",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.training_utils.MixedPrecisionTrainer",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.scene_classifier.SceneClassifier",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.duplicate_detector.DuplicateDetector",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.feature_cache.FeatureCache",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.parallel_feature_extractor.ParallelFeatureExtractor",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.progressive_trainer.ProgressiveTrainer",
+      "status": "fail",
+      "message": "Erro: No module named 'services.ai_core.progressive_trainer'",
+      "details": null
+    },
+    {
+      "name": "Import: services.alert_manager.get_alert_manager",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.monitoring.get_monitoring_collector",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.feature_selector.FeatureSelector",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.optuna_tuner.OptunaHyperparameterTuner",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.scheduled_retrainer.ScheduledRetrainer",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.gradient_checkpointing.add_gradient_checkpointing",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Config: USE_AUTO_HYPERPARAMS",
+      "status": "pass",
+      "message": "Auto Hyperparameters = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_LR_FINDER",
+      "status": "pass",
+      "message": "Learning Rate Finder = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_PARALLEL_EXTRACTION",
+      "status": "pass",
+      "message": "Parallel Extraction = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_PROGRESSIVE_TRAINING",
+      "status": "pass",
+      "message": "Progressive Training = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_FEATURE_SELECTION",
+      "status": "pass",
+      "message": "Feature Selection = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_MIXED_PRECISION",
+      "status": "pass",
+      "message": "Mixed Precision = True",
+      "details": null
+    },
+    {
+      "name": "Config: GRADIENT_ACCUMULATION_STEPS",
+      "status": "pass",
+      "message": "Gradient Accumulation = 4",
+      "details": null
+    },
+    {
+      "name": "Feature Cache - Set/Get",
+      "status": "fail",
+      "message": "Esperado {'feature1': 1.0, 'feature2': 2.0}, obtido None",
+      "details": null
+    },
+    {
+      "name": "Feature Cache - Stats",
+      "status": "pass",
+      "message": "Cache hits: 0",
+      "details": null
+    },
+    {
+      "name": "Feature Selector - SelectKBest",
+      "status": "pass",
+      "message": "Selecionou 10 features de 20",
+      "details": null
+    },
+    {
+      "name": "Feature Selector - Report",
+      "status": "pass",
+      "message": "Report gerado com 10 features",
+      "details": null
+    },
+    {
+      "name": "Alert Manager - Create Alert",
+      "status": "pass",
+      "message": "Alerta criado: alert_1763755867_1",
+      "details": null
+    },
+    {
+      "name": "Alert Manager - Stats",
+      "status": "pass",
+      "message": "Total alerts: 1",
+      "details": null
+    },
+    {
+      "name": "Monitoring - Get All Metrics",
+      "status": "pass",
+      "message": "Todas as m\u00e9tricas dispon\u00edveis",
+      "details": null
+    },
+    {
+      "name": "Monitoring - Summary",
+      "status": "pass",
+      "message": "Status: healthy",
+      "details": null
+    },
+    {
+      "name": "Gradient Checkpointing - Wrapper",
+      "status": "pass",
+      "message": "Modelo wrapped com sucesso",
+      "details": null
+    },
+    {
+      "name": "Gradient Checkpointing - Forward",
+      "status": "pass",
+      "message": "Forward pass OK: torch.Size([4, 5])",
+      "details": null
+    },
+    {
+      "name": "Gradient Checkpointing - Memory Savings",
+      "status": "pass",
+      "message": "Estimativa: 0.0 MB",
+      "details": null
+    }
+  ]
+}

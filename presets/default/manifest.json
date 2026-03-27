@@ -1,0 +1,46 @@
+{
+  "format_version": "1.0.0",
+  "preset": {
+    "id": "default-preset",
+    "name": "NSP Default Preset",
+    "version": "1.0.0",
+    "description": "Preset padrão do NSP Plugin com modelos base",
+    "tags": [
+      "default",
+      "base"
+    ],
+    "category": "Default"
+  },
+  "author": {
+    "name": "NSP Plugin",
+    "email": "support@nsp-plugin.com",
+    "website": null,
+    "verified": false
+  },
+  "models": {
+    "format": "pytorch",
+    "version": "2.2.0",
+    "architecture": "V2",
+    "trained_on": "2025-11-14",
+    "num_samples": 0,
+    "metrics": {}
+  },
+  "compatibility": {
+    "min_plugin_version": "2.0.0",
+    "lightroom_versions": [
+      "Classic 14.0+"
+    ]
+  },
+  "pricing": {
+    "type": "free",
+    "price": 0.0,
+    "currency": "EUR"
+  },
+  "stats": {
+    "downloads": 0,
+    "rating": 0.0,
+    "reviews": 0,
+    "created_at": "2025-11-14T22:12:33.321336Z",
+    "updated_at": "2025-11-14T22:12:33.321339Z"
+  }
+}

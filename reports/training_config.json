@@ -1,0 +1,42 @@
+{
+  "classifier": {
+    "epochs": 26,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "patience": 15,
+    "dropout": 0.2,
+    "weight_decay": 0.001,
+    "use_class_weights": false,
+    "mixup_alpha": 0.2
+  },
+  "regressor": {
+    "epochs": 33,
+    "batch_size": 32,
+    "learning_rate": 0.0005,
+    "patience": 15,
+    "dropout": 0.15,
+    "weight_decay": 0.001
+  },
+  "reasoning": {
+    "classifier": {
+      "epochs": "Epochs padr\u00e3o",
+      "batch_size": "Batch padr\u00e3o",
+      "learning_rate": "LR padr\u00e3o para regress\u00e3o",
+      "patience": "Patience ajustada ao tamanho do dataset",
+      "dropout": "Dropout leve",
+      "weight_decay": "Weight decay padr\u00e3o para regress\u00e3o",
+      "use_class_weights": "Dataset bem balanceado: sem necessidade de weights",
+      "mixup_alpha": "Mixup leve para regulariza\u00e7\u00e3o"
+    },
+    "regressor": {
+      "epochs": "Epochs padr\u00e3o",
+      "batch_size": "Batch padr\u00e3o",
+      "learning_rate": "LR padr\u00e3o para regress\u00e3o",
+      "patience": "Patience ajustada ao tamanho do dataset",
+      "dropout": "Dropout leve",
+      "weight_decay": "Weight decay padr\u00e3o para regress\u00e3o",
+      "use_class_weights": "Dataset bem balanceado: sem necessidade de weights",
+      "mixup_alpha": "Mixup leve para regulariza\u00e7\u00e3o"
+    }
+  }
+}

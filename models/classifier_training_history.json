@@ -1,0 +1,6 @@
+{
+  "train_losses": [],
+  "val_losses": [],
+  "val_accuracies": [],
+  "learning_rates": []
+}

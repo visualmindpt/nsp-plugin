@@ -1,0 +1,90 @@
+# NSP Plugin - License Server .htaccess
+# Security and routing configuration
+
+# Disable directory listing
+Options -Indexes
+
+# Enable URL rewriting
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/license/
+
+    # Force HTTPS (uncomment in production)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Block access to sensitive files and directories
+    RewriteRule ^config/ - [F,L]
+    RewriteRule ^lib/ - [F,L]
+    RewriteRule ^logs/ - [F,L]
+    RewriteRule ^\.git/ - [F,L]
+    RewriteRule ^\.env - [F,L]
+
+    # API routing - map /v1/endpoint to /v1/endpoint.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^v1/([a-z]+)$ v1/$1.php [L,QSA]
+
+    # Health check endpoint
+    RewriteRule ^health$ health.php [L,QSA]
+</IfModule>
+
+# Protect config files
+<FilesMatch "^(config\.php|\.htaccess|\.env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect hidden files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Disable PHP execution in uploads directory (if any)
+<DirectoryMatch "^.*/uploads/.*$">
+    php_flag engine off
+</DirectoryMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "DENY"
+
+    # Prevent MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+
+    # XSS protection
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # Referrer policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Remove server signature
+    Header unset Server
+    Header unset X-Powered-By
+</IfModule>
+
+# Disable PHP error display (production)
+php_flag display_errors off
+php_flag display_startup_errors off
+php_value error_reporting 0
+
+# Enable error logging
+php_flag log_errors on
+php_value error_log logs/php_errors.log
+
+# Set timezone
+php_value date.timezone "Europe/Lisbon"
+
+# Increase security
+php_flag expose_php off
+php_flag allow_url_fopen off
+php_flag allow_url_include off
+
+# File upload limits (if needed)
+php_value upload_max_filesize 2M
+php_value post_max_size 2M
+php_value max_execution_time 30
+php_value max_input_time 30
+php_value memory_limit 128M

@@ -1,0 +1,66 @@
+{
+  "method": "auto",
+  "task": "classification",
+  "num_selected": 21,
+  "selected_features": [
+    "r_mean",
+    "r_std",
+    "r_skew",
+    "r_shadows",
+    "r_midtones",
+    "r_highlights",
+    "g_midtones",
+    "b_shadows",
+    "b_midtones",
+    "color_temperature",
+    "saturation_mean",
+    "saturation_std",
+    "dominant_hue",
+    "clipped_highlights",
+    "clipped_shadows",
+    "contrast_range",
+    "dynamic_range",
+    "has_face",
+    "num_faces",
+    "face_coverage",
+    "num_lines"
+  ],
+  "method_info": {
+    "original_features": 32,
+    "target_features": 30,
+    "steps": [
+      {
+        "step": 1,
+        "method": "correlation",
+        "features_before": 32,
+        "features_after": 21,
+        "removed": 11
+      }
+    ],
+    "final_features": 21,
+    "selected_features": [
+      "r_mean",
+      "r_std",
+      "r_skew",
+      "r_shadows",
+      "r_midtones",
+      "r_highlights",
+      "g_midtones",
+      "b_shadows",
+      "b_midtones",
+      "color_temperature",
+      "saturation_mean",
+      "saturation_std",
+      "dominant_hue",
+      "clipped_highlights",
+      "clipped_shadows",
+      "contrast_range",
+      "dynamic_range",
+      "has_face",
+      "num_faces",
+      "face_coverage",
+      "num_lines"
+    ],
+    "reduction_ratio": 0.65625
+  }
+}

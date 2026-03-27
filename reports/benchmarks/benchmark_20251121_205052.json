@@ -1,0 +1,75 @@
+{
+  "timestamp": "2025-11-21T20:50:41.624424",
+  "benchmarks": [
+    {
+      "name": "Feature Extraction (Parallel)",
+      "success": false,
+      "error": "ParallelFeatureExtractor.__init__() got an unexpected keyword argument 'cache_dir'"
+    },
+    {
+      "name": "Cache Performance",
+      "num_requests": 1000,
+      "duration_seconds": 0.0238,
+      "requests_per_second": 42041.42,
+      "hit_rate_percent": 100.0,
+      "avg_latency_us": 23.79,
+      "success": true
+    },
+    {
+      "name": "Model Inference",
+      "results": [
+        {
+          "batch_size": 1,
+          "duration_seconds": 0.0016,
+          "samples_per_second": 62156.25,
+          "avg_latency_ms": 0.02
+        },
+        {
+          "batch_size": 8,
+          "duration_seconds": 0.0021,
+          "samples_per_second": 386126.95,
+          "avg_latency_ms": 0.02
+        },
+        {
+          "batch_size": 16,
+          "duration_seconds": 0.0023,
+          "samples_per_second": 697452.34,
+          "avg_latency_ms": 0.02
+        },
+        {
+          "batch_size": 32,
+          "duration_seconds": 0.0026,
+          "samples_per_second": 1243677.98,
+          "avg_latency_ms": 0.03
+        }
+      ],
+      "success": true
+    },
+    {
+      "name": "End-to-End Latency",
+      "num_requests": 100,
+      "mean_latency_ms": 90.67,
+      "median_latency_ms": 91.55,
+      "p95_latency_ms": 92.59,
+      "p99_latency_ms": 92.62,
+      "min_latency_ms": 83.4,
+      "max_latency_ms": 92.93,
+      "success": true
+    },
+    {
+      "name": "Memory Usage",
+      "rss_mb": 293.42,
+      "vms_mb": 402316.94,
+      "percent": 3.58,
+      "system_available_gb": 1.49,
+      "success": true
+    }
+  ],
+  "system_info": {
+    "cpu_count": 8,
+    "cpu_freq_mhz": 3504,
+    "memory_total_gb": 8.0,
+    "python_version": "3.11.14 (main, Oct  9 2025, 16:16:55) [Clang 17.0.0 (clang-1700.0.13.3)]"
+  },
+  "total_duration_seconds": 11.18
+}

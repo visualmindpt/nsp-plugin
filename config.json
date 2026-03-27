@@ -1,0 +1,55 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 5678,
+    "workers": 1,
+    "timeout": 120,
+    "log_level": "info"
+  },
+  "paths": {
+    "models_dir": "models",
+    "data_dir": "data",
+    "logs_dir": "logs",
+    "presets_dir": "presets",
+    "datasets_dir": "datasets"
+  },
+  "training": {
+    "batch_size": 16,
+    "classifier_epochs": 50,
+    "refiner_epochs": 100,
+    "learning_rate": 0.001,
+    "use_mixed_precision": true,
+    "use_data_augmentation": true,
+    "use_auto_hyperparams": true,
+    "use_lr_finder": true,
+    "use_progressive_training": true
+  },
+  "models": {
+    "classifier": "best_preset_classifier_v2.pth",
+    "refiner": "best_refinement_model_v2.pth",
+    "version": "2.0"
+  },
+  "plugin": {
+    "confidence_threshold": 0.5,
+    "feedback_interval": 8,
+    "feedback_force_seconds": 1800,
+    "enable_server_logging": true
+  },
+  "database": {
+    "feedback_db": "data/feedback.db",
+    "plugin_db": "data/nsp_plugin.db",
+    "use_wal_mode": true
+  },
+  "performance": {
+    "use_gpu": true,
+    "max_batch_size": 32,
+    "cache_predictions": true,
+    "parallel_workers": 4
+  },
+  "security": {
+    "api_auth_enabled": false,
+    "api_keys_file": "data/api_keys.json",
+    "require_https": false,
+    "rate_limiting_enabled": true
+  }
+}

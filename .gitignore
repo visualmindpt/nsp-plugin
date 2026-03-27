@@ -1,0 +1,127 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+ENV/
+env/
+venv_gradio/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+.project
+.settings/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Node modules (for Control Center)
+control-center/node_modules/
+control-center/dist/
+control-center/src-tauri/target/
+
+# Tauri
+.tauri/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Mac specific
+.AppleDouble
+.LSOverride
+
+# Config
+nsp_config.json
+config/nsp_config.json
+
+# LLM metadata
+CLAUDE.md.bak
+
+# Venv site-packages
+venv/lib/
+
+# Sensitive runtime data
+data/api_keys.json
+
+# Training data (large files)
+data/feature_cache/
+data/sessions/
+data/feedback_export/
+data/images/
+data/ava/
+data/lightroom_dataset.csv
+data/image_features.csv
+data/deep_features.npy
+data/embeddings_manifest.json
+datasets/
+
+# Model backups
+*.pth.backup
+*.pkl.backup
+*.json.backup
+
+# Archives
+nsp_models_*.zip
+
+# Node modules (all locations)
+node_modules/
+control-center-v2/desktop/node_modules/
+control-center-v2/desktop/src-tauri/target/
+
+# Rust build
+target/

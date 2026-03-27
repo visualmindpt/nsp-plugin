@@ -1,0 +1,23 @@
+[
+  "r_mean",
+  "r_std",
+  "r_skew",
+  "r_shadows",
+  "r_midtones",
+  "r_highlights",
+  "g_midtones",
+  "b_shadows",
+  "b_midtones",
+  "color_temperature",
+  "saturation_mean",
+  "saturation_std",
+  "dominant_hue",
+  "clipped_highlights",
+  "clipped_shadows",
+  "contrast_range",
+  "dynamic_range",
+  "has_face",
+  "num_faces",
+  "face_coverage",
+  "num_lines"
+]

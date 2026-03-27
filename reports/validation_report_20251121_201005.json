@@ -1,0 +1,303 @@
+{
+  "timestamp": "2025-11-21T20:10:05.053080",
+  "total_tests": 49,
+  "passed": 30,
+  "failed": 19,
+  "warnings": 0,
+  "tests": [
+    {
+      "name": "File: services/dataset_quality_analyzer.py",
+      "status": "pass",
+      "message": "Found - Dataset Quality Analyzer",
+      "details": null
+    },
+    {
+      "name": "File: services/auto_hyperparameter_selector.py",
+      "status": "pass",
+      "message": "Found - Auto Hyperparameter Selector",
+      "details": null
+    },
+    {
+      "name": "File: services/learning_rate_finder.py",
+      "status": "pass",
+      "message": "Found - Learning Rate Finder",
+      "details": null
+    },
+    {
+      "name": "File: services/training_utils.py",
+      "status": "pass",
+      "message": "Found - Training Utils (Mixed Precision, etc)",
+      "details": null
+    },
+    {
+      "name": "File: services/scene_classifier.py",
+      "status": "pass",
+      "message": "Found - Scene Classifier",
+      "details": null
+    },
+    {
+      "name": "File: services/duplicate_detector.py",
+      "status": "pass",
+      "message": "Found - Duplicate Detector",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/feature_cache.py",
+      "status": "pass",
+      "message": "Found - Feature Cache",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/parallel_feature_extractor.py",
+      "status": "pass",
+      "message": "Found - Parallel Feature Extractor",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/progressive_trainer.py",
+      "status": "fail",
+      "message": "Missing - Progressive Trainer",
+      "details": null
+    },
+    {
+      "name": "File: services/alert_manager.py",
+      "status": "pass",
+      "message": "Found - Alert Manager",
+      "details": null
+    },
+    {
+      "name": "File: services/monitoring.py",
+      "status": "pass",
+      "message": "Found - Monitoring System",
+      "details": null
+    },
+    {
+      "name": "File: control-center-v2/static/js/websocket-client.js",
+      "status": "pass",
+      "message": "Found - WebSocket Client",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/feature_selector.py",
+      "status": "pass",
+      "message": "Found - Feature Selector",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/optuna_tuner.py",
+      "status": "pass",
+      "message": "Found - Optuna Tuner",
+      "details": null
+    },
+    {
+      "name": "File: scripts/auto_train.py",
+      "status": "pass",
+      "message": "Found - Auto Train Pipeline",
+      "details": null
+    },
+    {
+      "name": "File: services/scheduled_retrainer.py",
+      "status": "pass",
+      "message": "Found - Scheduled Retrainer",
+      "details": null
+    },
+    {
+      "name": "File: NSP-Plugin.lrplugin/PredictionCache.lua",
+      "status": "pass",
+      "message": "Found - Prediction Cache (Plugin)",
+      "details": null
+    },
+    {
+      "name": "File: NSP-Plugin.lrplugin/BatchProcessor.lua",
+      "status": "pass",
+      "message": "Found - Batch Processor (Plugin)",
+      "details": null
+    },
+    {
+      "name": "File: services/ai_core/gradient_checkpointing.py",
+      "status": "pass",
+      "message": "Found - Gradient Checkpointing",
+      "details": null
+    },
+    {
+      "name": "File: train/train_models_v2.py",
+      "status": "pass",
+      "message": "Found - Main Training Script",
+      "details": null
+    },
+    {
+      "name": "File: services/server.py",
+      "status": "pass",
+      "message": "Found - API Server",
+      "details": null
+    },
+    {
+      "name": "Import: services.dataset_quality_analyzer.DatasetQualityAnalyzer",
+      "status": "fail",
+      "message": "Erro: No module named 'pandas'",
+      "details": null
+    },
+    {
+      "name": "Import: services.auto_hyperparameter_selector.AutoHyperparameterSelector",
+      "status": "fail",
+      "message": "Erro: No module named 'pandas'",
+      "details": null
+    },
+    {
+      "name": "Import: services.learning_rate_finder.find_optimal_lr",
+      "status": "fail",
+      "message": "Erro: No module named 'torch'",
+      "details": null
+    },
+    {
+      "name": "Import: services.training_utils.MixedPrecisionTrainer",
+      "status": "fail",
+      "message": "Erro: No module named 'torch'",
+      "details": null
+    },
+    {
+      "name": "Import: services.scene_classifier.SceneClassifier",
+      "status": "fail",
+      "message": "Erro: No module named 'torch'",
+      "details": null
+    },
+    {
+      "name": "Import: services.duplicate_detector.DuplicateDetector",
+      "status": "fail",
+      "message": "Erro: No module named 'imagehash'",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.feature_cache.FeatureCache",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.parallel_feature_extractor.ParallelFeatureExtractor",
+      "status": "fail",
+      "message": "Erro: No module named 'numpy'",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.progressive_trainer.ProgressiveTrainer",
+      "status": "fail",
+      "message": "Erro: No module named 'services.ai_core.progressive_trainer'",
+      "details": null
+    },
+    {
+      "name": "Import: services.alert_manager.get_alert_manager",
+      "status": "fail",
+      "message": "Erro: No module named 'psutil'",
+      "details": null
+    },
+    {
+      "name": "Import: services.monitoring.get_monitoring_collector",
+      "status": "fail",
+      "message": "Erro: No module named 'psutil'",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.feature_selector.FeatureSelector",
+      "status": "fail",
+      "message": "Erro: No module named 'numpy'",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.optuna_tuner.OptunaHyperparameterTuner",
+      "status": "fail",
+      "message": "Erro: No module named 'optuna'",
+      "details": null
+    },
+    {
+      "name": "Import: services.scheduled_retrainer.ScheduledRetrainer",
+      "status": "pass",
+      "message": "Importado com sucesso",
+      "details": null
+    },
+    {
+      "name": "Import: services.ai_core.gradient_checkpointing.add_gradient_checkpointing",
+      "status": "fail",
+      "message": "Erro: No module named 'torch'",
+      "details": null
+    },
+    {
+      "name": "Config: USE_AUTO_HYPERPARAMS",
+      "status": "pass",
+      "message": "Auto Hyperparameters = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_LR_FINDER",
+      "status": "pass",
+      "message": "Learning Rate Finder = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_PARALLEL_EXTRACTION",
+      "status": "pass",
+      "message": "Parallel Extraction = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_PROGRESSIVE_TRAINING",
+      "status": "pass",
+      "message": "Progressive Training = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_FEATURE_SELECTION",
+      "status": "pass",
+      "message": "Feature Selection = True",
+      "details": null
+    },
+    {
+      "name": "Config: USE_MIXED_PRECISION",
+      "status": "pass",
+      "message": "Mixed Precision = True",
+      "details": null
+    },
+    {
+      "name": "Config: GRADIENT_ACCUMULATION_STEPS",
+      "status": "pass",
+      "message": "Gradient Accumulation = 4",
+      "details": null
+    },
+    {
+      "name": "Feature Cache - Set/Get",
+      "status": "fail",
+      "message": "Esperado {'feature1': 1.0, 'feature2': 2.0}, obtido None",
+      "details": null
+    },
+    {
+      "name": "Feature Cache - Stats",
+      "status": "pass",
+      "message": "Cache hits: 0",
+      "details": null
+    },
+    {
+      "name": "Feature Selector",
+      "status": "fail",
+      "message": "Erro: No module named 'numpy'\nTraceback (most recent call last):\n  File \"/Users/nelsonsilva/Documentos/gemini/projetos/NSP Plugin_dev_full_package/scripts/validate_all_features.py\", line 322, in test_feature_selector\n    from services.ai_core.feature_selector import FeatureSelector\n  File \"/Users/nelsonsilva/Documentos/gemini/projetos/NSP Plugin_dev_full_package/services/ai_core/feature_selector.py\", line 22, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n",
+      "details": null
+    },
+    {
+      "name": "Alert Manager",
+      "status": "fail",
+      "message": "Erro: No module named 'psutil'\nTraceback (most recent call last):\n  File \"/Users/nelsonsilva/Documentos/gemini/projetos/NSP Plugin_dev_full_package/scripts/validate_all_features.py\", line 380, in test_alert_manager\n    from services.alert_manager import get_alert_manager, AlertType, AlertLevel\n  File \"/Users/nelsonsilva/Documentos/gemini/projetos/NSP Plugin_dev_full_package/services/alert_manager.py\", line 17, in <module>\n    import psutil\nModuleNotFoundError: No module named 'psutil'\n",
+      "details": null
+    },
+    {
+      "name": "Monitoring System",
+      "status": "fail",
+      "message": "Erro: No module named 'psutil'\nTraceback (most recent call last):\n  File \"/Users/nelsonsilva/Documentos/gemini/projetos/NSP Plugin_dev_full_package/scripts/validate_all_features.py\", line 434, in test_monitoring\n    from services.monitoring import get_monitoring_collector\n  File \"/Users/nelsonsilva/Documentos/gemini/projetos/NSP Plugin_dev_full_package/services/monitoring.py\", line 16, in <module>\n    import psutil\nModuleNotFoundError: No module named 'psutil'\n",
+      "details": null
+    },
+    {
+      "name": "Gradient Checkpointing",
+      "status": "fail",
+      "message": "Erro: No module named 'torch'\nTraceback (most recent call last):\n  File \"/Users/nelsonsilva/Documentos/gemini/projetos/NSP Plugin_dev_full_package/scripts/validate_all_features.py\", line 487, in test_gradient_checkpointing\n    from services.ai_core.gradient_checkpointing import (\n    ...<3 lines>...\n    )\n  File \"/Users/nelsonsilva/Documentos/gemini/projetos/NSP Plugin_dev_full_package/services/ai_core/gradient_checkpointing.py\", line 26, in <module>\n    import torch\nModuleNotFoundError: No module named 'torch'\n",
+      "details": null
+    }
+  ]
+}
