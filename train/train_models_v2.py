@@ -16,6 +16,7 @@ Uso:
 import os
 import sys
 from pathlib import Path
+from datetime import datetime
 
 # Adicionar root ao path para imports
 root_dir = Path(__file__).parent.parent
@@ -26,6 +27,7 @@ import numpy as np
 import torch
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report
 import joblib
 import json
 import logging
@@ -61,12 +63,20 @@ from services.training_utils import TrainingEnhancer
 from services.dataset_quality_analyzer import DatasetQualityAnalyzer
 from services.session_manager import TrainingSessionManager, TrainingSession
 
-# Configurar logging
+# Configurar logging (stdout + ficheiro com timestamp)
+_log_dir = Path('logs')
+_log_dir.mkdir(exist_ok=True)
+_log_file = _log_dir / f"train_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+_file_handler = logging.FileHandler(_log_file, encoding='utf-8')
+_file_handler.setFormatter(_formatter)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+logging.getLogger().addHandler(_file_handler)
 logger = logging.getLogger(__name__)
+logger.info(f"Log de treino: {_log_file}")
 
 # --- Configurações ---
 CATALOG_PATH = Path(os.environ.get('LIGHTROOM_CATALOG_PATH', 'path/to/Lightroom Catalog.lrcat'))
@@ -1071,10 +1081,29 @@ def run_full_training_pipeline(
         y_train_labels, y_val_labels, actual_num_presets
     )
 
-    train_refinement_regressor(
+    trained_refinement = train_refinement_regressor(
         X_stat_train, X_stat_val, X_deep_train, X_deep_val,
         y_train_labels, y_val_labels, y_train_deltas, y_val_deltas,
         delta_columns, scaler_deltas, actual_num_presets
+    )
+
+    # Avaliação final no test set
+    trained_classifier = OptimizedPresetClassifier(
+        stat_features_dim=X_stat_train.shape[1],
+        deep_features_dim=X_deep_train.shape[1],
+        num_presets=actual_num_presets,
+        width_factor=MODEL_WIDTH_FACTOR
+    )
+    trained_classifier.load_state_dict(
+        torch.load(MODELS_DIR / 'best_preset_classifier_v2.pth', map_location='cpu')
+    )
+    _device = 'mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu'
+    evaluate_on_test_set(
+        trained_classifier, trained_refinement,
+        X_stat_test, X_deep_test,
+        y_test_labels, y_test_deltas,
+        delta_columns, scaler_deltas,
+        actual_num_presets, _device
     )
 
     preset_files = {
@@ -1099,6 +1128,93 @@ def run_full_training_pipeline(
         presets_identified=actual_num_presets
     )
     return "\n".join(summary_lines)
+
+
+def evaluate_on_test_set(
+    classifier_model: OptimizedPresetClassifier,
+    regressor_model: OptimizedRefinementRegressor,
+    X_stat_test: np.ndarray,
+    X_deep_test: np.ndarray,
+    y_test_labels: np.ndarray,
+    y_test_deltas: np.ndarray,
+    delta_columns: List[str],
+    scaler_deltas,
+    num_presets: int,
+    device: str
+) -> Dict[str, Any]:
+    """Avaliação final não-enviesada no test set separado. Guarda resultado em models/test_evaluation.json."""
+    from torch.utils.data import DataLoader as _DL
+    logger.info("=" * 70)
+    logger.info("AVALIAÇÃO FINAL NO TEST SET")
+    logger.info("=" * 70)
+
+    test_ds = LightroomDataset(X_stat_test, X_deep_test, y_test_labels, y_test_deltas)
+    test_loader = _DL(test_ds, batch_size=32, shuffle=False)
+
+    # Classificador
+    clf_trainer = OptimizedClassifierTrainer(classifier_model, device=device, use_mixed_precision=False)
+    test_loss_clf, test_acc, preds, labels = clf_trainer.validate(test_loader)
+    report_labels = list(range(num_presets))
+    target_names = [f'Preset {i + 1}' for i in report_labels]
+    clf_report = classification_report(
+        labels, preds,
+        labels=report_labels,
+        target_names=target_names,
+        zero_division=0,
+        output_dict=True
+    )
+    logger.info(f"Test Accuracy (Classificador): {test_acc:.4f}")
+    logger.info("\nClassification Report (Test Set):")
+    logger.info(classification_report(
+        labels, preds,
+        labels=report_labels,
+        target_names=target_names,
+        zero_division=0
+    ))
+
+    # Regressor
+    weights = [PARAM_IMPORTANCE.get(col.replace('delta_', ''), 1.0) for col in delta_columns]
+    weights_tensor = torch.FloatTensor(weights)
+    reg_trainer = OptimizedRefinementTrainer(
+        regressor_model,
+        weights_tensor,
+        device=device,
+        use_mixed_precision=False
+    )
+    test_loss_reg, mae_per_param, _, _ = reg_trainer.validate(test_loader)
+    avg_mae = float(np.mean(mae_per_param))
+
+    logger.info(f"Test Loss (Regressor): {test_loss_reg:.6f} | MAE médio: {avg_mae:.4f}")
+    if delta_columns:
+        logger.info("MAE por parâmetro (top 10):")
+        for i, col in enumerate(delta_columns[:10]):
+            param_name = col.replace('delta_', '')
+            if scaler_deltas:
+                mae_real = mae_per_param[i] * scaler_deltas.scale_[i]
+            else:
+                mae_real = mae_per_param[i]
+            logger.info(f"  {param_name:20s}: {mae_real:.4f}")
+
+    results = {
+        "classifier": {
+            "test_loss": float(test_loss_clf),
+            "test_accuracy": float(test_acc),
+            "report": clf_report
+        },
+        "regressor": {
+            "test_loss": float(test_loss_reg),
+            "mae_avg": avg_mae,
+            "mae_per_param": {
+                col.replace('delta_', ''): float(mae_per_param[i])
+                for i, col in enumerate(delta_columns)
+            }
+        }
+    }
+    out_path = MODELS_DIR / 'test_evaluation.json'
+    with open(out_path, 'w') as f:
+        json.dump(results, f, indent=2)
+    logger.info(f"Resultados de avaliação guardados em {out_path}")
+    return results
 
 
 def main():
@@ -1141,10 +1257,29 @@ def main():
     )
 
     # 7. Treinar refinador
-    train_refinement_regressor(
+    trained_refinement = train_refinement_regressor(
         X_stat_train, X_stat_val, X_deep_train, X_deep_val,
         y_train_labels, y_val_labels, y_train_deltas, y_val_deltas,
         delta_columns, scaler_deltas, actual_num_presets
+    )
+
+    # 8. Avaliação final no test set
+    trained_classifier = OptimizedPresetClassifier(
+        stat_features_dim=X_stat_train.shape[1],
+        deep_features_dim=X_deep_train.shape[1],
+        num_presets=actual_num_presets,
+        width_factor=MODEL_WIDTH_FACTOR
+    )
+    trained_classifier.load_state_dict(
+        torch.load(MODELS_DIR / 'best_preset_classifier_v2.pth', map_location='cpu')
+    )
+    device = 'mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu'
+    evaluate_on_test_set(
+        trained_classifier, trained_refinement,
+        X_stat_test, X_deep_test,
+        y_test_labels, y_test_deltas,
+        delta_columns, scaler_deltas,
+        actual_num_presets, device
     )
 
     logger.info("=" * 70)

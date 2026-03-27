@@ -23,6 +23,11 @@ return {
             enabledWhen = "photosSelected",
         },
         {
+            title = "Match Reference Style",
+            file = "MatchReferenceStyle.lua",
+            enabledWhen = "photosSelected",
+        },
+        {
             title = "AI Preset - Preview Antes/Depois",
             file = "PreviewBeforeAfter.lua",
             enabledWhen = "photosSelected",
@@ -81,6 +86,11 @@ return {
         {
             title = "AI Preset V2 (Auto Single/Batch)",
             file = "ApplyAIPresetV2.lua",
+            enabledWhen = "photosSelected",
+        },
+        {
+            title = "Match Reference Style",
+            file = "MatchReferenceStyle.lua",
             enabledWhen = "photosSelected",
         },
         {

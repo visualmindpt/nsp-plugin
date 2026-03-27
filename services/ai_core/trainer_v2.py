@@ -173,7 +173,8 @@ class OptimizedClassifierTrainer:
               epochs: int = 50,
               patience: int = 7,
               num_presets: int = 4,
-              max_lr: float = 0.01) -> OptimizedPresetClassifier:
+              max_lr: float = 0.01,
+              checkpoint_path: Optional[Path] = None) -> OptimizedPresetClassifier:
         """
         Treina o modelo.
 
@@ -196,12 +197,13 @@ class OptimizedClassifierTrainer:
             self.optimizer,
             max_lr=max_lr,
             total_steps=total_steps,
-            pct_start=0.3,
+            pct_start=0.1,
             anneal_strategy='cos',
             div_factor=25.0,
             final_div_factor=10000.0
         )
 
+        ckpt = Path(checkpoint_path) if checkpoint_path else Path('best_preset_classifier_v2.pth')
         best_val_loss = float('inf')
         patience_counter = 0
 
@@ -233,7 +235,7 @@ class OptimizedClassifierTrainer:
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
                 patience_counter = 0
-                torch.save(self.model.state_dict(), 'best_preset_classifier_v2.pth')
+                torch.save(self.model.state_dict(), ckpt)
                 logger.info("  Melhor modelo guardado!")
             else:
                 patience_counter += 1
@@ -242,7 +244,7 @@ class OptimizedClassifierTrainer:
                     break
 
         # Carregar melhor modelo
-        self.model.load_state_dict(torch.load('best_preset_classifier_v2.pth'))
+        self.model.load_state_dict(torch.load(ckpt))
 
         # Report final
         _, _, final_preds, final_labels = self.validate(val_loader)
@@ -394,7 +396,8 @@ class OptimizedRefinementTrainer:
               patience: int = 15,
               delta_columns: List[str] = [],
               scaler_deltas=None,
-              max_lr: float = 0.005) -> OptimizedRefinementRegressor:
+              max_lr: float = 0.005,
+              checkpoint_path: Optional[Path] = None) -> OptimizedRefinementRegressor:
         """
         Treina o modelo.
 
@@ -418,12 +421,13 @@ class OptimizedRefinementTrainer:
             self.optimizer,
             max_lr=max_lr,
             total_steps=total_steps,
-            pct_start=0.3,
+            pct_start=0.1,
             anneal_strategy='cos',
             div_factor=25.0,
             final_div_factor=10000.0
         )
 
+        ckpt = Path(checkpoint_path) if checkpoint_path else Path('best_refinement_model_v2.pth')
         patience_counter = 0
 
         logger.info(f"Iniciando treino com OneCycleLR (max_lr={max_lr})")
@@ -460,7 +464,7 @@ class OptimizedRefinementTrainer:
             if val_loss < self.best_val_loss:
                 self.best_val_loss = val_loss
                 patience_counter = 0
-                torch.save(self.model.state_dict(), 'best_refinement_model_v2.pth')
+                torch.save(self.model.state_dict(), ckpt)
                 logger.info("  Melhor modelo guardado!")
             else:
                 patience_counter += 1
@@ -469,7 +473,7 @@ class OptimizedRefinementTrainer:
                     break
 
         # Carregar melhor modelo
-        self.model.load_state_dict(torch.load('best_refinement_model_v2.pth'))
+        self.model.load_state_dict(torch.load(ckpt))
 
         # Análise final
         _, final_mae, final_preds, final_targets = self.validate(val_loader)

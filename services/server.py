@@ -21,6 +21,7 @@ import base64
 import binascii
 import json
 import logging
+import torch
 import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -133,6 +134,24 @@ class AutoStraightenResponse(BaseModel):
     requires_correction: bool = Field(..., description="Se precisa correção (|angle| > 0.5°).")
     num_lines_detected: int = Field(..., description="Número de linhas horizontais detectadas.")
     recommendation: str = Field(..., description="Recomendação: 'rotate', 'none', ou 'manual_check'.")
+
+class ReferenceMatchRequest(BaseModel):
+    image_path: Optional[str] = Field(None, description="Path da foto a editar.")
+    image_b64: Optional[str] = Field(None, description="Foto a editar em base64.")
+    reference_path: Optional[str] = Field(None, description="Path do JPEG exportado da referência.")
+    reference_b64: Optional[str] = Field(None, description="Referência em base64.")
+
+    @model_validator(mode="after")
+    def validate_inputs(cls, v: "ReferenceMatchRequest") -> "ReferenceMatchRequest":
+        if not v.image_path and not v.image_b64:
+            raise ValueError("Define 'image_path' ou 'image_b64'.")
+        if not v.reference_path and not v.reference_b64:
+            raise ValueError("Define 'reference_path' ou 'reference_b64'.")
+        return v
+
+class ReferenceMatchResponse(BaseModel):
+    predicted_params: Dict[str, float]
+    processing_time_ms: float
 
 class BatchPredictRequest(BaseModel):
     """Request para predição em batch (múltiplas imagens)"""
@@ -269,6 +288,15 @@ FEEDBACK_COLLECTOR: Optional[FeedbackCollector] = None
 XMP_GENERATOR: Optional[XMPGenerator] = None
 ALERT_MANAGER = None  # AlertManager para alertas automáticos
 MONITORING_COLLECTOR = None  # MonitoringCollector para métricas avançadas
+
+# Globals para o modo Reference Match
+REFERENCE_MODEL = None          # ReferenceRegressor
+REFERENCE_SCALER_STAT = None    # StandardScaler para features estatísticas
+REFERENCE_SCALER_DEEP = None    # StandardScaler para deep features
+REFERENCE_SCALER_STYLE = None   # StandardScaler para style fingerprints
+REFERENCE_SCALER_PARAMS = None  # StandardScaler para parâmetros absolutos
+REFERENCE_PARAM_COLUMNS: Optional[List[str]] = None  # nomes dos parâmetros
+STYLE_FINGERPRINT_EXTRACTOR = None  # StyleFingerprintExtractor
 
 # ============================================================================
 # Helper Functions
@@ -432,6 +460,49 @@ def startup_event() -> None:
     except Exception as exc:
         logging.error(f"Falha ao inicializar MonitoringCollector: {exc}", exc_info=True)
         MONITORING_COLLECTOR = None
+
+    # Carregar modelos do modo Reference Match (opcional)
+    global REFERENCE_MODEL, REFERENCE_SCALER_STAT, REFERENCE_SCALER_DEEP
+    global REFERENCE_SCALER_STYLE, REFERENCE_SCALER_PARAMS, REFERENCE_PARAM_COLUMNS
+    global STYLE_FINGERPRINT_EXTRACTOR
+    _ref_model_path = MODELS_DIR / 'reference_model.pth'
+    _ref_scaler_style = MODELS_DIR / 'scaler_style.pkl'
+    _ref_scaler_params = MODELS_DIR / 'scaler_params_ref.pkl'
+    _ref_param_cols = MODELS_DIR / 'reference_param_columns.json'
+    _ref_files = [_ref_model_path, _ref_scaler_style, _ref_scaler_params,
+                  MODELS_DIR / 'scaler_stat.pkl', MODELS_DIR / 'scaler_deep.pkl',
+                  _ref_param_cols]
+    if all(p.exists() for p in _ref_files):
+        try:
+            import joblib as _joblib
+            from services.ai_core.reference_regressor import ReferenceRegressor as _RR
+            from services.ai_core.style_fingerprint_extractor import StyleFingerprintExtractor as _SFE
+
+            with open(_ref_param_cols) as _f:
+                REFERENCE_PARAM_COLUMNS = json.load(_f)
+
+            REFERENCE_SCALER_STAT = _joblib.load(MODELS_DIR / 'scaler_stat.pkl')
+            REFERENCE_SCALER_DEEP = _joblib.load(MODELS_DIR / 'scaler_deep.pkl')
+            REFERENCE_SCALER_STYLE = _joblib.load(_ref_scaler_style)
+            REFERENCE_SCALER_PARAMS = _joblib.load(_ref_scaler_params)
+
+            num_params = len(REFERENCE_PARAM_COLUMNS)
+            stat_dim = REFERENCE_SCALER_STAT.mean_.shape[0]
+            deep_dim = REFERENCE_SCALER_DEEP.mean_.shape[0]
+            REFERENCE_MODEL = _RR(
+                stat_features_dim=stat_dim,
+                deep_features_dim=deep_dim,
+                num_params=num_params,
+            )
+            REFERENCE_MODEL.load_state_dict(torch.load(_ref_model_path, map_location='cpu'))
+            REFERENCE_MODEL.eval()
+            STYLE_FINGERPRINT_EXTRACTOR = _SFE()
+            logging.info("✅ Reference Match model carregado com sucesso.")
+        except Exception as _exc:
+            logging.warning(f"⚠️ Não foi possível carregar o modelo Reference Match: {_exc}")
+            REFERENCE_MODEL = None
+    else:
+        logging.info("ℹ️ Modelo Reference Match não encontrado — endpoint /predict/reference inactivo.")
 
     cleanup_old_temp_files()
 
@@ -721,6 +792,84 @@ async def predict(request: Request) -> PredictResponse:
     finally:
         if tmp_path and tmp_path.exists():
             tmp_path.unlink(missing_ok=True)
+
+
+@app.post("/predict/reference", response_model=ReferenceMatchResponse)
+@limiter.limit("10/minute")
+async def predict_reference(request: Request) -> ReferenceMatchResponse:
+    """
+    Prediz parâmetros Lightroom absolutos para uma foto, tendo como referência
+    de look outra foto já editada.
+
+    Body:
+        image_path / image_b64     — foto a editar
+        reference_path / reference_b64 — JPEG exportado da foto de referência
+    """
+    import time as _time
+    import numpy as _np
+
+    try:
+        body_json = await request.json()
+        payload = ReferenceMatchRequest.model_validate(body_json)
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail=f"Corpo do pedido inválido: {exc}")
+
+    if REFERENCE_MODEL is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Modelo Reference Match não treinado. Execute train/train_reference_model.py primeiro."
+        )
+
+    # Materializar a foto a editar
+    photo_path, photo_tmp = _materialize_input(payload.image_path, payload.image_b64)
+    # Materializar a referência
+    ref_path, ref_tmp = _materialize_input(payload.reference_path, payload.reference_b64)
+
+    t0 = _time.time()
+    try:
+        from services.ai_core.image_feature_extractor import ImageFeatureExtractor as _IFE
+        from services.ai_core.deep_feature_extractor import DeepFeatureExtractor as _DFE
+
+        stat_extractor = _IFE()
+        deep_extractor = _DFE()
+
+        # Extrair features da foto a editar
+        stat_feat = _np.array(stat_extractor.extract_all_features(photo_path), dtype=_np.float32).reshape(1, -1)
+        deep_feat = _np.array(deep_extractor.extract_features(photo_path), dtype=_np.float32).reshape(1, -1)
+
+        # Extrair style fingerprint da referência
+        style_fp = _np.array(STYLE_FINGERPRINT_EXTRACTOR.extract(ref_path), dtype=_np.float32).reshape(1, -1)
+
+        # Normalizar
+        stat_scaled = REFERENCE_SCALER_STAT.transform(stat_feat)
+        deep_scaled = REFERENCE_SCALER_DEEP.transform(deep_feat)
+        style_scaled = REFERENCE_SCALER_STYLE.transform(style_fp)
+
+        # Predição
+        import torch as _torch
+        with _torch.no_grad():
+            stat_t = _torch.tensor(stat_scaled, dtype=_torch.float32)
+            deep_t = _torch.tensor(deep_scaled, dtype=_torch.float32)
+            style_t = _torch.tensor(style_scaled, dtype=_torch.float32)
+            params_norm = REFERENCE_MODEL(stat_t, deep_t, style_t).cpu().numpy()
+
+        # Desnormalizar
+        params = REFERENCE_SCALER_PARAMS.inverse_transform(params_norm)[0]
+
+        predicted = {col: float(params[i]) for i, col in enumerate(REFERENCE_PARAM_COLUMNS or [])}
+        processing_ms = (_time.time() - t0) * 1000
+
+        logging.info(f"[reference] {len(predicted)} parâmetros preditos em {processing_ms:.1f}ms")
+        return ReferenceMatchResponse(predicted_params=predicted, processing_time_ms=processing_ms)
+
+    except Exception as exc:
+        logging.exception("Erro inesperado no endpoint /predict/reference")
+        raise HTTPException(status_code=500, detail=str(exc))
+    finally:
+        if photo_tmp and photo_tmp.exists():
+            photo_tmp.unlink(missing_ok=True)
+        if ref_tmp and ref_tmp.exists():
+            ref_tmp.unlink(missing_ok=True)
 
 
 # ============================================================================
