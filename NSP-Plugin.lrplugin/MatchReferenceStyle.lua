@@ -12,6 +12,7 @@ local LrApplication    = import 'LrApplication'
 local LrDialogs        = import 'LrDialogs'
 local LrExportSession  = import 'LrExportSession'
 local LrFileUtils      = import 'LrFileUtils'
+local LrHttp           = import 'LrHttp'
 local LrLogger         = import 'LrLogger'
 local LrPathUtils      = import 'LrPathUtils'
 local LrProgressScope  = import 'LrProgressScope'
@@ -252,5 +253,4 @@ local function main()
     end)
 end
 
-local LrHttp = import 'LrHttp'
 main()
